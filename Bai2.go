@@ -4,27 +4,39 @@ import (
 	"fmt"
 	"strconv"
 	"sync"
+	"time"
 )
 
-func X() {
-	key := "key"
-	value := "value"
+// Des asd asd
+type Des struct {
+	sync.Mutex
+	m    map[string]string
+	iden int
+}
 
-	iden := 0
-	X := make(map[string]string)
+// Bai2 asd asd
+func Bai2() {
+	newDes := &Des{m: make(map[string]string), iden: 1}
+
 	for i := 0; i < 3; i++ {
 		go func() {
 			for i := 0; i < 1000; i++ {
-				var mux = &sync.Mutex{}
 
-				mux.Lock()
-				keyN := key + strconv.FormatInt(int64(iden), 10)
-				valueN := value + strconv.FormatInt(int64(iden), 10)
-				iden++
-				defer mux.Unlock()
-				X[keyN] = valueN
-				fmt.Println(X)
+				newDes.Match("Key", "Value")
+
 			}
 		}()
 	}
+	time.Sleep(5 * time.Second)
+	fmt.Println(newDes.m)
+}
+
+// Match method
+func (a *Des) Match(key string, value string) {
+	a.Lock()
+	keyN := key + strconv.FormatInt(int64(a.iden), 10)
+	valueN := value + strconv.FormatInt(int64(a.iden), 10)
+	a.iden++
+	defer a.Unlock()
+	a.m[keyN] = valueN
 }

@@ -12,6 +12,16 @@ type line struct {
 	line  int
 }
 
+func PrintLine(chanlbuff chan *line, wg *sync.WaitGroup) {
+	for {
+		select {
+		case dat := <-chanlbuff:
+			log.Printf("Dong %d giá trị là: %s xong!", dat.line, dat.value)
+			wg.Done()
+		}
+	}
+}
+
 func Bai4() {
 	chanlbuff := make(chan *line, 10)
 	defer close(chanlbuff)
@@ -25,13 +35,7 @@ func Bai4() {
 
 	for i := 0; i < 3; i++ {
 		go func() {
-			for {
-				select {
-				case dat := <-chanlbuff:
-					log.Printf("Dong %d giá trị là: %s xong!", dat.line, dat.value)
-					wg.Done()
-				}
-			}
+			PrintLine(chanlbuff, &wg)
 
 		}()
 	}

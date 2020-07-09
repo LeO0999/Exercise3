@@ -42,9 +42,8 @@ func main() {
 	//Dung waitGroup
 
 	var wg sync.WaitGroup
-	wg.Add(1)
-	go WaitGroupRoutine(&wg)
-	wg.Wait()
+
+	WaitGroupRoutine(&wg)
 
 	// Dung Mutex
 	var mu = &sync.Mutex{}

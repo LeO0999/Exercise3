@@ -6,25 +6,27 @@ import (
 	"time"
 )
 
-func errFunc() {
-	m := make(map[int]int)
+func errFunc(wg *sync.WaitGroup, m *sync.Mutex) {
+	ma := make(map[int]int)
 	for i := 0; i < 1000; i++ {
+
 		go func() {
 			for j := 1; j < 10000; j++ {
+				m.Lock()
+				defer m.Unlock()
+				if _, ok := ma[j]; ok {
 
-				if _, ok := m[j]; !ok {
-
-					delete(m, j)
+					delete(ma, j)
 					continue
 
 				}
 
-				m[j] = j * 10
-
+				ma[j] = j * 10
+				wg.Done()
 			}
 		}()
 	}
-	log.Println(m)
+	log.Println(ma)
 	log.Print("done")
 }
 
@@ -34,9 +36,8 @@ func main() {
 	/// nâng cao. In ra các message theo thứ tự. -- In ra message 3 trước message 2. Sử dụng 3 cách để làm( gợi ý: sử dụng mutex, chan, waitGroup)
 
 	//Dung chan
-	d := make(chan bool)
-	go chanRoutine(d)
-	<-d
+
+	chanRoutine()
 
 	//Dung waitGroup
 
@@ -63,8 +64,11 @@ func main() {
 	time.Sleep(5 * time.Second)
 
 	/// Bai 3: chạy đoạn chương trình dưới đây. Nếu có lỗi hãy thêm logic để nó chạy đúng.
-	errFunc()
-
+	wg1 := new(sync.WaitGroup)
+	mu1 := new(sync.Mutex)
+	wg1.Add(1)
+	errFunc(wg1, mu1)
+	wg1.Wait()
 	/// Bai 4: bài tập worker pool: tạo bằng tay file dưới. file.txt sau đó đọc từng dòng file này nạp dữ liệu vào 1 buffer channel có size 10, Điều kiện đọc file từng dòng. Chỉ được sử dụng 3 go routine. Kết quả xử lý xong ỉn ra màn hình + từ xong
 
 	Bai4()

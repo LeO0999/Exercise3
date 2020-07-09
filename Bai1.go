@@ -15,9 +15,11 @@ func WaitGroupRoutine(wg *sync.WaitGroup) {
 	}()
 	time.Sleep(2 * time.Second)
 	log.Print("hello 2")
+
 }
 
-func chanRoutine(done chan bool) {
+func chanRoutine() {
+	done := make(chan bool)
 	log.Print("hello 1")
 
 	go func() {
@@ -27,5 +29,6 @@ func chanRoutine(done chan bool) {
 	}()
 	time.Sleep(2 * time.Second)
 	log.Print("hello 2")
+	<-done
 
 }
